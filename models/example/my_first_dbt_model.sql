@@ -11,9 +11,12 @@
 
 with source_data as (
 
-    select 1 as id
-    union all
-    select null as id
+    SELECT
+    *
+    FROM
+    `dt-patrick-project-dev.datatonic_pipeline.projects_staging`
+    WHERE
+    DATE(updated_at) > "2022-01-01"
 
 )
 

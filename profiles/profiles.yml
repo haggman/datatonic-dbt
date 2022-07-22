@@ -1,0 +1,13 @@
+datatonic_dbt:
+  outputs:
+    dev:
+      dataset: datatonic_pipeline
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: europe-west2
+      method: oauth
+      priority: interactive
+      project: dt-patrick-project-dev
+      threads: 3
+      type: bigquery
+  target: dev
