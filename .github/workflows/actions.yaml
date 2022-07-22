@@ -14,19 +14,6 @@ jobs:
     name: 'Build and push DBT container'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
-    - id: 'auth'
-      uses: 'google-github-actions/auth@v0'
-      with:
-        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-    - name: 'Set up Cloud SDK'
-      uses: 'google-github-actions/setup-gcloud@v0'
-
-    - name: 'Use gcloud CLI'
-      run: 'gcloud info'
-    
     - uses: RafikFarhad/push-to-gcr-github-action@v4.1
       with:
         gcloud_service_key: ${{ secrets.GCP_CREDENTIALS }} # can be base64 encoded or plain text
