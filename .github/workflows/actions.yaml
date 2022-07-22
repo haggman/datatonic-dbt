@@ -5,6 +5,9 @@ on:
     branches:
       - main
   pull_request:
+env:
+  PROJECT_ID: dt-patrick-project-dev
+  COMPOSER_BUCKET: europe-west2-pipeline-compo-326f64fd-bucket
 
 jobs:
   load-dbt:
@@ -24,8 +27,22 @@ jobs:
     - name: 'Use gcloud CLI'
       run: 'gcloud info'
     
-    - name: 'upload-profile'
+    - name: 'upload-dbt-profile'
       uses: 'google-github-actions/upload-cloud-storage@v0'
       with:
         path: 'profiles/profiles.yml'
-        destination: 'europe-west2-pipeline-compo-326f64fd-bucket/data/profiles'
+        destination: '${{ env.COMPOSER_BUCKET }}/data/profiles'
+
+    - name: 'upload-dbt-models'
+      uses: 'google-github-actions/upload-cloud-storage@v0'
+      with:
+        path: 'models'
+        destination: '${{ env.COMPOSER_BUCKET }}/dags'
+
+    - name: 'upload-dbt-project'
+      uses: 'google-github-actions/upload-cloud-storage@v0'
+      with:
+        path: 'dbt_project.yml'
+        destination: '${{ env.COMPOSER_BUCKET }}/dags'
+      
+        
