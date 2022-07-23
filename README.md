@@ -13,7 +13,7 @@ Assuming the cluster is build and running, you will need to:
 3. Once gcloud is co3nfigured and you've added kubectl, use the standard approach to setting up your .kube/config file. 
 
 ``` bash
-gcloud container clusters get-credentials compser-cluster-name --region region-where-it-lives --project owning-project
+gcloud container clusters get-credentials composer-cluster-name --region region-where-it-lives --project owning-project
 ```
 
 4. From the VM, add a new namespace for the DBT app.
@@ -27,4 +27,20 @@ kubectl create namespace dbt-pipelines
 ``` bash
 kubectl create serviceaccount sa-gke-dbt \
     --namespace dbt-pipelines
+```
+
+6. Enable impersonation, so the the K8S SA can impersonate the GCP SA.  
+
+``` bash
+gcloud iam service-accounts add-iam-policy-binding your-sa-name@your-project-name.iam.gserviceaccount.com \
+    --role roles/iam.workloadIdentityUser \
+    --member "serviceAccount:your-project-name.svc.id.goog[dbt-pipelines/sa-gke-dbt]"
+```
+
+7. Annotate the K8S SA with the email address of the GCP SA.
+
+``` bash
+kubectl annotate serviceaccount sa-gke-dbt \
+    --namespace dbt-pipelines \
+    iam.gke.io/gcp-service-account=your-sa-name@your-project-name.iam.gserviceaccount.com
 ```
