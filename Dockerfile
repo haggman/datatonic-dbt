@@ -5,17 +5,11 @@ ARG build_for=linux/amd64
 ##
 # base image (abstract)
 ##
-FROM --platform=$build_for python:3.8-slim-bullseye as base
+FROM --platform=$build_for python:3.8-slim-bullseye
 
-ARG dbt_core_ref=dbt-core@v1.3.0a1
-ARG dbt_postgres_ref=dbt-core@v1.3.0a1
-ARG dbt_redshift_ref=dbt-redshift@v1.0.0
-ARG dbt_bigquery_ref=dbt-bigquery@v1.0.0
-ARG dbt_snowflake_ref=dbt-snowflake@v1.0.0
-ARG dbt_spark_ref=dbt-spark@v1.0.0
-# special case args
-ARG dbt_spark_version=all
-ARG dbt_third_party
+#Versions to load
+ARG dbt_core_ref=dbt-core@v1.1.1
+ARG dbt_bigquery_ref=dbt-bigquery@v1.1.1
 
 # System setup
 RUN apt-get update \
@@ -38,7 +32,7 @@ RUN apt-get update \
 ENV PYTHONIOENCODING=utf-8
 ENV LANG=C.UTF-8
 
-# Update python
+# Update pip
 RUN python -m pip install --upgrade pip setuptools wheel --no-cache-dir
 
 # Set docker basics
@@ -47,16 +41,18 @@ VOLUME /usr/app
 # ENTRYPOINT ["dbt"]
 
 ##
+# dbt-core
+##
+RUN python -m pip install --no-cache-dir "git+https://github.com/dbt-labs/${dbt_core_ref}#egg=dbt-core&subdirectory=core"
+
+##
 # dbt-bigquery
 ##
-FROM base as dbt-bigquery
 RUN python -m pip install --no-cache-dir "git+https://github.com/dbt-labs/${dbt_bigquery_ref}#egg=dbt-bigquery"
 
 ##
-# Now add this app
+# Now add the app
 ##
-
-WORKDIR /usr/app
 COPY . .
 COPY profiles/profiles.yml /root/.dbt/
 CMD [ "dbt", "run" ]
